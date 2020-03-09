@@ -37,7 +37,7 @@ const allowedAppIDs = [440, 730];
 	console.log("Logging into Steam as client and server...");
 	await clients[1].login(config.boostingAccount.username, config.boostingAccount.password); // Log onto main first cuz SteamGuard
 	let resolveds = await Promise.all([
-		clients[0].login(config.botAccount.username, config.botAccount.username),
+		clients[0].login(config.botAccount.username, config.botAccount.password),
 		server.login()
 	]);
 	let serverID = resolveds[1];
