@@ -1,0 +1,14 @@
+{
+	"boostingAccount": {
+		"username": "MainAccount",
+		"password": "MainPassword"
+	},
+	"botAccount": {
+		"username": "BotAccount",
+		"password": "BotPassword"
+	},
+	"itemID": "1111111111",
+	"appID": 730,
+	"eventType": 0,
+	"incrementValue": 1
+}
