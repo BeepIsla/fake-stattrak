@@ -78,7 +78,7 @@ module.exports = class TF2Server extends ServerShared {
 		});
 	}
 
-	incrementKillCountAttribute(killerID, victimID, itemID, eventType, amount) {
+	incrementKillCountAttribute(killerID, victimID, itemID, eventType, amount, repeat) {
 		let killerID64 = killerID.getSteamID64();
 		let victimID64 = victimID.getSteamID64();
 
@@ -87,7 +87,7 @@ module.exports = class TF2Server extends ServerShared {
 			this.protobufs.data.tf2.EGCItemMsg.k_EMsgGC_IncrementKillCountAttribute_Multiple,
 			{},
 			this.protobufs.encodeProto("CMsgIncrementKillCountAttribute_Multiple", {
-				msgs: new Array(amount).fill(0).map(() => {
+				msgs: new Array(repeat).fill(0).map(() => {
 					return {
 						killer_steam_id: killerID64,
 						victim_steam_id: victimID64,
@@ -95,7 +95,7 @@ module.exports = class TF2Server extends ServerShared {
 						item_id: itemID,
 						event_type: eventType,
 
-						increment_value: 1
+						increment_value: amount
 					};
 				})
 			})

@@ -43,7 +43,8 @@ These StatTrak increments basically just tell Valve to update the item and chang
 - `itemID`: String - Item ID of the item you want to boost - [How to find the item ID](#find-item-id)
 - `appID`: Number - ID of the game your item is from - *Currently only CSGO (`730`) and TF2 (`440`) are supported*
 - `eventType`: Number - The event type which defines what stat on an item gets changed - [More Info](#event-type)
-- `incrementValue`: Number - How much you want to add to the current item
+- `incrementValue`: Number - How much you want to add to the current item - *Some event types do not support this*
+- `repeat`: Number - Amount of times we want to repeat the above request - *Only useful for event types with forced `incrementValue` (Forced `1` for CSGO, only adjust `incrementValue`)*
 
 ## Valve Anti-Cheat
 

@@ -58,14 +58,13 @@ const allowedAppIDs = [440, 730];
 	// A little delay just to make sure its all set and data has been received
 	await new Promise(p => setTimeout(p, 2000));
 
-	server.incrementKillCountAttribute(client2.steamID, client1.steamID, config.itemID, config.eventType, config.incrementValue);
-	console.log("Item increments are now being processed by Valve, this may take a little bit or until the bots have logged off.");
+	server.incrementKillCountAttribute(clients[1].steamID, clients[0].steamID, config.itemID, config.eventType, config.incrementValue, config.repeat);
+	console.log("Item increments are now being processed by Valve, this may take a little bit or until log-off.");
 
 	console.log("Logging off in 10 seconds...");
 	setTimeout(() => {
 		server.logOff();
-		client1.logOff();
-		client2.logOff();
+		clients.forEach(c => c.logOff());
 
 		console.log("Successfully logged off");
 		setTimeout(process.exit, 5000, 0).unref();
