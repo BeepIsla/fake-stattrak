@@ -61,6 +61,7 @@ An event type tells Steam what statistic on a weapon you want to modify, this im
 
 <details>
 <summary>Counter-Strike: Global Offensive</summary>
+
 | Type ID | Name                                | Internal Name |
 |---------|-------------------------------------|---------------|
 | 0       | StatTrak™ Confirmed Kills           | Kills         |
@@ -68,7 +69,8 @@ An event type tells Steam what statistic on a weapon you want to modify, this im
 </details>
 
 <details>
-- <summary>Team Fortress 2</summary>
+<summary>Team Fortress 2</summary>
+
 | Type ID | Name                                    | Internal Name                       |
 |---------|-----------------------------------------|-------------------------------------|
 | 0       | Kills                                   | Kills                               |
