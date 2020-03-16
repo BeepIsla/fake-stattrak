@@ -54,7 +54,7 @@ module.exports = class CSGOClient extends ClientShared {
 				let serverIP = serverInfo.addr.split(":").shift();
 				let serverPort = serverInfo.addr.split(":").pop();
 
-				let joinRequest = await this.coordinator.sendMessage(
+				await this.coordinator.sendMessage(
 					730,
 					this.protobufs.data.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_ClientRequestJoinServerData,
 					{},
@@ -64,12 +64,8 @@ module.exports = class CSGOClient extends ClientShared {
 						serverid: serverID,
 						server_ip: StdLib.IPv4.stringToInt(serverIP),
 						server_port: serverPort
-					}),
-					this.protobufs.data.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_ClientRequestJoinServerData,
-					5000
+					})
 				);
-				joinRequest = joinRequest instanceof Buffer ? this.protobufs.decodeProto("CMsgGCCStrike15_v2_ClientRequestJoinServerData", joinRequest) : joinRequest;
-				this.revervation = joinRequest;
 
 				let data = await super.joinServer(serverID, appTicket);
 				resolve(data);
