@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const request = require("request");
+const unzipper = require("unzipper");
 const Protobufs = require("./Protobufs.js");
 
 module.exports = class Helper {
