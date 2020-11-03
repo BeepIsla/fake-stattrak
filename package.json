@@ -1,6 +1,6 @@
 {
   "name": "fake-stattrak",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Apply fake kills to your stattrak and strange weapons in CSGO and TF2",
   "main": "index.js",
   "scripts": {
@@ -10,14 +10,14 @@
   "author": "BeepIsla",
   "license": "MIT",
   "dependencies": {
-    "@doctormckay/stdlib": "^1.10.2",
+    "@doctormckay/stdlib": "^1.11.2",
     "bytebuffer": "^5.0.1",
     "long": "^4.0.0",
-    "protobufjs": "^6.8.8",
+    "protobufjs": "^6.10.1",
     "request": "^2.88.2",
-    "steam-user": "^4.13.0",
+    "steam-user": "^4.18.0",
     "steamid": "^1.1.3",
-    "unzipper": "^0.10.10"
+    "unzipper": "^0.10.11"
   },
   "devDependencies": {
     "vdf-parser": "^1.1.0"
