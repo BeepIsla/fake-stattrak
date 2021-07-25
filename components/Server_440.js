@@ -95,7 +95,7 @@ module.exports = class TF2Server extends ServerShared {
 						item_id: itemID,
 						event_type: eventType,
 
-						increment_value: amount
+						increment_value: typeof amount !== "number" || amount <= 1 ? undefined : amount
 					};
 				})
 			})
