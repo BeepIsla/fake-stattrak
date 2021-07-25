@@ -66,37 +66,6 @@ module.exports = class CSGOServer extends ServerShared {
 		});
 	}
 
-	setupMatchEndRewards() {
-		return this.coordinator.sendMessage(
-			730,
-			this.protobufs.data.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_MatchmakingServerReservationResponse,
-			{
-				steamid: this.client.steamID.getSteamID64(),
-				client_sessionid: this.client._sessionID
-			},
-			this.protobufs.encodeProto("CMsgGCCStrike15_v2_MatchmakingServerReservationResponse", {
-				map: this.map,
-				server_version: this.serverVersion,
-				reward_player_accounts: this.players.map(p => p.steamID.accountid)
-			})
-		);
-	}
-
-	runMatchEndRewards() {
-		return this.coordinator.sendMessage(
-			730,
-			this.protobufs.data.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_MatchEndRunRewardDrops,
-			{},
-			this.protobufs.encodeProto("CMsgGCCStrike15_v2_MatchEndRunRewardDrops", {
-				serverinfo: {
-					map: this.map,
-					server_version: this.serverVersion,
-					reward_player_accounts: this.players.map(p => p.steamID.accountid)
-				}
-			})
-		);
-	}
-
 	incrementKillCountAttribute(killerID, victimID, itemID, eventType, amount) {
 		return this.coordinator.sendMessage(
 			this.appID,
