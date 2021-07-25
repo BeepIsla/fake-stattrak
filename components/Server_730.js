@@ -66,7 +66,11 @@ module.exports = class CSGOServer extends ServerShared {
 		});
 	}
 
-	incrementKillCountAttribute(killerID, victimID, itemID, eventType, amount) {
+	incrementKillCountAttribute(killerID, victimID, itemID, eventType, amount, repeat) {
+		if (typeof amount !== "number" || amount <= 0) {
+			amount = 1;
+		}
+
 		return this.coordinator.sendMessage(
 			this.appID,
 			this.protobufs.data.csgo.EGCItemMsg.k_EMsgGC_IncrementKillCountAttribute,
@@ -78,7 +82,7 @@ module.exports = class CSGOServer extends ServerShared {
 				item_id: itemID,
 				event_type: eventType,
 
-				amount: amount
+				amount: amount * repeat
 			})
 		);
 	}
