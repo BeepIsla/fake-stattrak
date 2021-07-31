@@ -17,9 +17,9 @@ module.exports = class Coordinator extends Events {
 		});
 
 		let _handleMessage = this.steamUser._handleMessage;
-		this.steamUser._handleMessage = (header, body) => {
+		this.steamUser._handleMessage = (header, body, ...args) => {
 			this.emit("receivedFromSteam", header, body);
-			_handleMessage.call(this.steamUser, header, body);
+			_handleMessage.call(this.steamUser, header, body, ...args);
 		}
 	}
 
