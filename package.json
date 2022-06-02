@@ -13,7 +13,7 @@
     "@doctormckay/stdlib": "^1.11.2",
     "bytebuffer": "^5.0.1",
     "long": "^4.0.0",
-    "protobufjs": "^6.10.1",
+    "protobufjs": "^6.11.3",
     "request": "^2.88.2",
     "steam-user": "^4.18.0",
     "steamid": "^1.1.3",
