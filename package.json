@@ -12,6 +12,7 @@
   "dependencies": {
     "@doctormckay/stdlib": "^1.11.2",
     "bytebuffer": "^5.0.1",
+    "inquirer": "^7.1.0",
     "long": "^4.0.0",
     "protobufjs": "^6.10.1",
     "request": "^2.88.2",

@@ -181,8 +181,8 @@ module.exports = class ClientShared extends Events {
 	}
 
 	async generateTicket() {
-		let authTicket = await this.client.getAuthSessionTicket(this.appID);
-		return authTicket.appTicket;
+		let authTicket = await this.client.createAuthSessionTicket(this.appID);
+		return authTicket.sessionTicket;
 	}
 
 	joinServer(serverID, appTicket) {

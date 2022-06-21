@@ -101,4 +101,20 @@ module.exports = class TF2Server extends ServerShared {
 			})
 		);
 	}
+
+	upgradeMerasmusLevel(player, level) {
+		return this.coordinator.sendMessage(
+			this.appID,
+			this.protobufs.data.tf2.ETFGCMsg.k_EMsgGC_Halloween_UpdateMerasmusLootLevel,
+			{},
+			this.protobufs.encodeProto("CMsgUpdateHalloweenMerasmusLootLevel", {
+				merasmus_level: level,
+				players: [
+					{
+						steam_id: new SteamID(player.toString()).getSteamID64()
+					}
+				]
+			})
+		);
+	}
 }
