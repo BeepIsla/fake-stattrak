@@ -66,24 +66,30 @@ module.exports = class CSGOServer extends ServerShared {
 		});
 	}
 
-	incrementKillCountAttribute(killerID, victimID, itemID, eventType, amount, repeat) {
+	async incrementKillCountAttribute(killerID, victimID, itemID, eventType, amount, repeat) {
 		if (typeof amount !== "number" || amount <= 0) {
 			amount = 1;
 		}
 
-		return this.coordinator.sendMessage(
-			this.appID,
-			this.protobufs.data.csgo.EGCItemMsg.k_EMsgGC_IncrementKillCountAttribute,
-			{},
-			this.protobufs.encodeProto("CMsgIncrementKillCountAttribute", {
-				killer_account_id: killerID.accountid,
-				victim_account_id: victimID.accountid,
+		for (let i = 0; i < repeat; i++) {
+			if ((i % 100) === 0) {
+				await new Promise(p => setTimeout(p, 10));
+			}
 
-				item_id: itemID,
-				event_type: eventType,
+			this.coordinator.sendMessage(
+				this.appID,
+				this.protobufs.data.csgo.EGCItemMsg.k_EMsgGC_IncrementKillCountAttribute,
+				{},
+				this.protobufs.encodeProto("CMsgIncrementKillCountAttribute", {
+					killer_account_id: killerID.accountid,
+					victim_account_id: victimID.accountid,
 
-				amount: amount * repeat
-			})
-		);
+					item_id: itemID,
+					event_type: eventType,
+
+					amount: amount
+				})
+			);
+		}
 	}
 }

@@ -78,28 +78,36 @@ module.exports = class TF2Server extends ServerShared {
 		});
 	}
 
-	incrementKillCountAttribute(killerID, victimID, itemID, eventType, amount, repeat) {
+	async incrementKillCountAttribute(killerID, victimID, itemID, eventType, amount, repeat) {
 		let killerID64 = killerID.getSteamID64();
 		let victimID64 = victimID.getSteamID64();
 
-		return this.coordinator.sendMessage(
-			this.appID,
-			this.protobufs.data.tf2.EGCItemMsg.k_EMsgGC_IncrementKillCountAttribute_Multiple,
-			{},
-			this.protobufs.encodeProto("CMsgIncrementKillCountAttribute_Multiple", {
-				msgs: new Array(repeat).fill(0).map(() => {
-					return {
-						killer_steam_id: killerID64,
-						victim_steam_id: victimID64,
+		// Maximum packet size limits how high we can go in terms of repeats!
+		// 200K should work
+		for (let i = 0; i < repeat; i += 200_000) {
+			if ((i % 100) === 0) {
+				await new Promise(p => setTimeout(p, 10));
+			}
 
-						item_id: itemID,
-						event_type: eventType,
-
-						increment_value: typeof amount !== "number" || amount <= 1 ? undefined : amount
-					};
+			this.coordinator.sendMessage(
+				this.appID,
+				this.protobufs.data.tf2.EGCItemMsg.k_EMsgGC_IncrementKillCountAttribute_Multiple,
+				{},
+				this.protobufs.encodeProto("CMsgIncrementKillCountAttribute_Multiple", {
+					msgs: new Array(Math.min(200_000, repeat - i)).fill(0).map(() => {
+						return {
+							killer_steam_id: killerID64,
+							victim_steam_id: victimID64,
+	
+							item_id: itemID,
+							event_type: eventType,
+	
+							increment_value: typeof amount !== "number" || amount <= 1 ? undefined : amount
+						};
+					})
 				})
-			})
-		);
+			);
+		}
 	}
 
 	upgradeMerasmusLevel(player, level) {
