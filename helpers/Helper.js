@@ -39,7 +39,7 @@ module.exports = class Helper {
 		let res = await fetch("https://github.com/SteamDatabase/Protobufs/archive/master.zip");
 		let buf = Buffer.from(await res.arrayBuffer());
 
-		let zip = await unzipper.Open.buffer(body);
+		let zip = await unzipper.Open.buffer(buf);
 		await zip.extract({
 			path: dir
 		});
