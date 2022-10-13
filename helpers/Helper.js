@@ -1,77 +1,50 @@
 const path = require("path");
 const fs = require("fs");
-const request = require("request");
+const URL = require("url");
 const unzipper = require("unzipper");
 const Protobufs = require("./Protobufs.js");
 
 module.exports = class Helper {
 	static async GetSteamAPI(interf, method, version, params) {
-		let json = await this.getJSON({
-			url: "https://api.steampowered.com/" + interf + "/" + method + "/" + version,
-			qs: params
-		});
+		let json = await this.getJSON("https://api.steampowered.com/" + interf + "/" + method + "/" + version, params);
 		return json.response;
 	}
 
-	static getJSON(opts) {
-		return new Promise((resolve, reject) => {
-			request(opts, (err, res, body) => {
-				if (err) {
-					reject(err);
-					return;
-				}
+	static async getJSON(url, qs) {
+		let uri = new URL.URL(url);
+		for (let key in qs) {
+			uri.searchParams.append(key, qs[key]);
+		}
 
-				try {
-					let json = JSON.parse(body);
-					resolve(json);
-				} catch (err) {
-					reject(body);
-				}
-			});
-		});
+		let res = await fetch(uri.href);
+		return await res.json();
 	}
 
-	static downloadProtobufs(dir) {
-		return new Promise(async (resolve, reject) => {
-			let deletes = ["Protobufs-master", "protobufs"];
-			await Promise.all(deletes.map(d => {
-				let p = path.join(dir, d);
-				if (fs.existsSync(p)) {
-					return this.deleteRecursive(p);
-				} else {
-					return new Promise(r => r());
-				}
-			}));
+	static async downloadProtobufs(dir) {
+		let deletes = ["Protobufs-master", "protobufs"];
+		await Promise.all(deletes.map(d => {
+			let p = path.join(dir, d);
+			if (fs.existsSync(p)) {
+				return this.deleteRecursive(p);
+			} else {
+				return new Promise(r => r());
+			}
+		}));
 
-			let newProDir = path.join(dir, "Protobufs-master");
-			let proDir = path.join(dir, "protobufs");
+		let newProDir = path.join(dir, "Protobufs-master");
+		let proDir = path.join(dir, "protobufs");
 
-			// Yes I know the ones I download here are technically not the same as the ones in the submodule
-			// but that doesn't really matter, I doubt Valve will do any major changes with the protobufs I use here anyways
-			request({
-				uri: "https://github.com/SteamDatabase/Protobufs/archive/master.zip",
-				encoding: null
-			}, async (err, res, body) => {
-				if (err) {
-					reject(err);
-					return;
-				}
+		// Yes I know the ones I download here are technically not the same as the ones in the submodule
+		// but that doesn't really matter, I doubt Valve will do any major changes with the protobufs I use here anyways
+		let res = await fetch("https://github.com/SteamDatabase/Protobufs/archive/master.zip");
+		let buf = Buffer.from(await res.arrayBuffer());
 
-				let zip = await unzipper.Open.buffer(body);
-				await zip.extract({
-					path: dir
-				});
-
-				fs.rename(newProDir, proDir, (err) => {
-					if (err) {
-						reject(err);
-						return;
-					}
-
-					resolve();
-				});
-			});
+		let zip = await unzipper.Open.buffer(body);
+		await zip.extract({
+			path: dir
 		});
+
+		fs.renameSync(newProDir, proDir);
 	}
 
 	static verifyProtobufs() {

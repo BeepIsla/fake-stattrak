@@ -10,6 +10,5 @@
 	"itemID": "1111111111",
 	"appID": 730,
 	"eventType": 0,
-	"incrementValue": 1,
-	"repeat": 1
+	"incrementValue": 1
 }

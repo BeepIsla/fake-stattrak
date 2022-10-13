@@ -1,5 +1,6 @@
 const SteamID = require("steamid");
 const ServerShared = require("./Server_Shared.js");
+const EventTypes = require("../helpers/EventTypes.js");
 
 module.exports = class TF2Server extends ServerShared {
 	constructor(map = "pl_badwater", serverName = "Development Test Server") {
@@ -78,36 +79,45 @@ module.exports = class TF2Server extends ServerShared {
 		});
 	}
 
-	async incrementKillCountAttribute(killerID, victimID, itemID, eventType, amount, repeat) {
+	async incrementKillCountAttribute(killerID, victimID, itemID, eventType, amount) {
+		let eventTypeInfo = EventTypes[440]?.[eventType];
 		let killerID64 = killerID.getSteamID64();
 		let victimID64 = victimID.getSteamID64();
 
-		// Maximum packet size limits how high we can go in terms of repeats!
-		// 200K should work
-		for (let i = 0; i < repeat; i += 200_000) {
-			if ((i % 100) === 0) {
-				await new Promise(p => setTimeout(p, 10));
-			}
+		// Hardcode the maxmium amount of "CMsgIncrementKillCountAttribute_Multiple" children we use at once
+		// Steam ignores packets too large so this sadly can't go into the millions
+		let maximumMultipleChildren = 10_000;
+		let increment = eventTypeInfo?.allowIncrement ? 10_000 : 1;
+		let multiMessagesNeeded = Math.ceil(amount / increment);
+		let chunksNeeded = Math.ceil(multiMessagesNeeded / maximumMultipleChildren);
+
+		for (let i = 0; i < chunksNeeded; i++) {
+			console.log(`Progress: ${i * increment * maximumMultipleChildren} / ${amount}`);
+			await new Promise(p => setTimeout(p, 50));
 
 			this.coordinator.sendMessage(
 				this.appID,
 				this.protobufs.data.tf2.EGCItemMsg.k_EMsgGC_IncrementKillCountAttribute_Multiple,
 				{},
 				this.protobufs.encodeProto("CMsgIncrementKillCountAttribute_Multiple", {
-					msgs: new Array(Math.min(200_000, repeat - i)).fill(0).map(() => {
-						return {
+					msgs: new Array(Math.min(maximumMultipleChildren, multiMessagesNeeded - (i * maximumMultipleChildren))).fill(0).map((_, j) => {
+						let data = {
 							killer_steam_id: killerID64,
 							victim_steam_id: victimID64,
-	
 							item_id: itemID,
-							event_type: eventType,
-	
-							increment_value: typeof amount !== "number" || amount <= 1 ? undefined : amount
+							event_type: eventType
 						};
+						if (eventTypeInfo?.allowIncrement) {
+							data.increment_value = Math.min(increment, amount - (j * increment));
+						}
+						return data;
 					})
 				})
 			);
 		}
+
+		// We are done! Final progress log (Its not truly calculated so if the above math is wrong this will be wrong too, lets hope I am smart)
+		console.log(`Progress: ${amount} / ${amount}`);
 	}
 
 	upgradeMerasmusLevel(player, level) {

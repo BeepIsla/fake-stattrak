@@ -1,5 +1,6 @@
 const SteamID = require("steamid");
 const ServerShared = require("./Server_Shared.js");
+const EventTypes = require("../helpers/EventTypes.js");
 
 module.exports = class CSGOServer extends ServerShared {
 	constructor(map = "de_dust2", serverName = "Development Test Server") {
@@ -66,30 +67,37 @@ module.exports = class CSGOServer extends ServerShared {
 		});
 	}
 
-	async incrementKillCountAttribute(killerID, victimID, itemID, eventType, amount, repeat) {
-		if (typeof amount !== "number" || amount <= 0) {
-			amount = 1;
-		}
+	async incrementKillCountAttribute(killerID, victimID, itemID, eventType, amount) {
+		let eventTypeInfo = EventTypes[730]?.[eventType];
+		let maximumMultiSendAtOnce = 100; // CSGO doesn't support multi-messages but we can send multiple GC messages at once
+		let increment = eventTypeInfo?.allowIncrement ? 10_000 : 1;
+		let multiSendsNeeded = Math.ceil(amount / increment);
+		let chunksNeeded = Math.ceil(multiSendsNeeded / maximumMultiSendAtOnce);
 
-		for (let i = 0; i < repeat; i++) {
-			if ((i % 100) === 0) {
-				await new Promise(p => setTimeout(p, 10));
-			}
+		// We send 10K at once
+		for (let i = 0; i < chunksNeeded; i ++) {
+			console.log(`Progress: ${i * increment * maximumMultiSendAtOnce} / ${amount}`);
+			await new Promise(p => setTimeout(p, 50));
 
-			this.coordinator.sendMessage(
-				this.appID,
-				this.protobufs.data.csgo.EGCItemMsg.k_EMsgGC_IncrementKillCountAttribute,
-				{},
-				this.protobufs.encodeProto("CMsgIncrementKillCountAttribute", {
+			let sendAtOnce = Math.min(maximumMultiSendAtOnce, multiSendsNeeded - (i * maximumMultiSendAtOnce));
+			for (let j = 0; j < sendAtOnce; j++) {
+				let data = {
 					killer_account_id: killerID.accountid,
 					victim_account_id: victimID.accountid,
-
 					item_id: itemID,
 					event_type: eventType,
-
-					amount: amount
-				})
-			);
+					amount: Math.min(increment, amount - (j * increment))
+				};
+				this.coordinator.sendMessage(
+					this.appID,
+					this.protobufs.data.csgo.EGCItemMsg.k_EMsgGC_IncrementKillCountAttribute,
+					{},
+					this.protobufs.encodeProto("CMsgIncrementKillCountAttribute", data)
+				);
+			}
 		}
+
+		// We are done! Final progress log (Its not truly calculated so if the above math is wrong this will be wrong too, lets hope I am smart)
+		console.log(`Progress: ${amount} / ${amount}`);
 	}
 }

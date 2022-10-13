@@ -18,7 +18,7 @@ These StatTrak increments basically just tell Valve to update the item and chang
 
 ## Requirements
 
-- [NodeJS](https://nodejs.org/en/)
+- [NodeJS](https://nodejs.org/en/) - `v18.10.0` or later
 - [A bit of JSON knowledge](https://www.json.org/)
 - A bot account
 
@@ -43,8 +43,8 @@ These StatTrak increments basically just tell Valve to update the item and chang
 - `itemID`: String - Item ID of the item you want to boost - [How to find the item ID](#find-item-id)
 - `appID`: Number - ID of the game your item is from - *Currently only CSGO (`730`) and TF2 (`440`) are supported*
 - `eventType`: Number - The event type which defines what stat on an item gets changed - [More Info](#event-type)
-- `incrementValue`: Number - How much you want to add to the current item - *Some event types do not support this - In this case either `1` or `null` must be used*
-- `repeat`: Number - Amount of times we want to repeat the above request - *Only useful for event types with forced `incrementValue` like CSGO)*
+- `incrementValue`: Number - How much you want to add to the current item
+  - **Note:** Many changes have been made behind the scenes, this might not properly work! If you have problems please open a new [Issue on Github](https://github.com/BeepIsla/fake-stattrak/issues)
 
 ## Valve Anti-Cheat
 
@@ -56,9 +56,9 @@ To find your item ID go to [your inventory](http://steamcommunity.com/my/invento
 
 ## Event Type
 
-An event type tells Steam what statistic on a weapon you want to modify, this important because some items have multiple different counters. Here is a list of all event types I am aware of and their meaning **(Last Updated: 9th March 2020)**
+An event type tells Steam what statistic on a weapon you want to modify, this is important because some items have multiple different counters. Here is a list of all event types I am aware of and their meaning **(Last Updated: 9th March 2020)**
 
-*Note: Some my not work due to them being only counted on official servers, one example is the MVP counter on music kits.*
+**Note:** Some my not work due to them being only counted on official servers, one example is the MVP counter on music kits. I have attempted to automate everything, including splitting StatTrak increases, and detecting "Official Server Only" event types. This is not perfect so some may not work.
 
 <details>
 <summary>Counter-Strike: Global Offensive</summary>
@@ -126,7 +126,6 @@ An event type tells Steam what statistic on a weapon you want to modify, this im
 | 60      | Teammates Teleported                    | TeleportsGiven                      |
 | 61      | Tanks Destroyed                         | TanksDestroyed                      |
 | 62      | Long-Distance Kills                     | LongDistanceKills                   |
-| 63      |                                         | UniquePlayerKills                   |
 | 64      | Points Scored                           | PointsScored                        |
 | 65      | Double Donks                            | DoubleDonks                         |
 | 66      | Teammates Whipped                       | TeammatesWhipped                    |
