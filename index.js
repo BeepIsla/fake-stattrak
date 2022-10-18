@@ -91,6 +91,8 @@ const allowedAppIDs = [440, 730];
 	let secondDelay = 2 * Math.ceil(config.incrementValue / 50_000);
 
 	console.log(`Logging off in ${secondDelay} seconds... (You can exit early by closing the command prompt)`);
+	console.log(`You can view your item here: https://steamcommunity.com/profiles/${clients[1].steamID.getSteamID64()}/inventory/#${config.appID}_2_${config.itemID}`);
+	console.log("If the item does not show in your inventory using the link above you might have entered the wrong ItemID.");
 	setTimeout(() => {
 		server.logOff();
 		clients.forEach(c => c.logOff());
