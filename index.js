@@ -87,8 +87,8 @@ const allowedAppIDs = [440, 730];
 	console.log("It is not guaranteed that all increments will get processed by the end of this delay.");
 	console.log("Your inventory may be inaccessible for a few minutes.");
 
-	// Random number: 2s per 50K (1M = 40s)
-	let secondDelay = 2 * Math.ceil(config.incrementValue / 50_000);
+	// Random number: 2s per 200K (1M = 10s)
+	let secondDelay = 2 * Math.ceil(config.incrementValue / 200_000);
 
 	console.log(`Logging off in ${secondDelay} seconds... (You can exit early by closing the command prompt)`);
 	console.log(`You can view your item here: https://steamcommunity.com/profiles/${clients[1].steamID.getSteamID64()}/inventory/#${config.appID}_2_${config.itemID}`);
