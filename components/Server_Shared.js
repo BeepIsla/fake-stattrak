@@ -46,6 +46,16 @@ const appIdGcWelcomeDecode = {
 	"440": "CMsgServerWelcome",
 	"730": "CMsgClientWelcome"
 };
+const EServerFlags = {
+	None: 0,
+	Active: 1,
+	Secure: 2,
+	Dedicated: 4,
+	Linux: 8,
+	Passworded: 16,
+	Private: 32
+};
+
 
 module.exports = class ServerShared extends Events {
 	constructor(appID, map = "itemtest", serverName = "Development Test Server") {
@@ -136,7 +146,7 @@ module.exports = class ServerShared extends Events {
 					},
 					this.protobufs.encodeProto("CMsgGSServerType", {
 						app_id_served: this.appID,
-						flags: 6,
+						flags: EServerFlags.Active | EServerFlags.Dedicated | EServerFlags.Passworded | EServerFlags.Private,
 						game_port: 27015,
 						game_dir: appIdDir[this.appID],
 						game_version: this.serverVersionNice,
@@ -145,12 +155,6 @@ module.exports = class ServerShared extends Events {
 					this.protobufs.data.steam.EMsg.k_EMsgGSStatusReply,
 					10000
 				);
-				data = data instanceof Buffer ? this.protobufs.decodeProto("CMsgGSStatusReply", data) : data;
-				if (!data.is_secure) {
-					reject(new Error("\"is_secure\": \"" + data.is_secure + "\" | Expected \"true\""));
-					this.logOff();
-					return;
-				}
 
 				await this.coordinator.sendMessage(
 					undefined,
@@ -216,12 +220,12 @@ module.exports = class ServerShared extends Events {
 					max_players: 10,
 					bot_count: 0,
 					password: true,
-					secure: true,
+					secure: false,
 					dedicated: true,
 					os: "w",
 					game_data: appIdGameData[this.appID],
 					game_data_version: 1,
-					game_type: "empty,secure",
+					game_type: "empty",
 					map: this.map
 				});
 
@@ -427,7 +431,7 @@ module.exports = class ServerShared extends Events {
 					}),
 					game_data: appIdGameData[this.appID],
 					game_data_version: 1,
-					game_type: this.players.length <= 0 ? "empty,secure" : "secure"
+					game_type: this.players.length <= 0 ? "empty" : ""
 				});
 
 				resolve(true);
@@ -496,7 +500,7 @@ module.exports = class ServerShared extends Events {
 					}),
 					game_data: appIdGameData[this.appID],
 					game_data_version: 1,
-					game_type: this.players.length <= 0 ? "empty,secure" : "secure"
+					game_type: this.players.length <= 0 ? "empty" : ""
 				});
 
 				resolve(true);
