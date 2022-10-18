@@ -85,9 +85,9 @@ module.exports = class TF2Server extends ServerShared {
 		let victimID64 = victimID.getSteamID64();
 
 		// Hardcode the maxmium amount of "CMsgIncrementKillCountAttribute_Multiple" children we use at once
-		// Steam ignores packets too large so this sadly can't go into the millions
-		let maximumMultipleChildren = 10_000;
-		let increment = eventTypeInfo?.allowIncrement ? 10_000 : 1;
+		// Steam ignores packets too large so this sadly can't go into the thousands
+		let maximumMultipleChildren = 1_000;
+		let increment = eventTypeInfo?.allowIncrement ? 1_000 : 1;
 		let multiMessagesNeeded = Math.ceil(amount / increment);
 		let chunksNeeded = Math.ceil(multiMessagesNeeded / maximumMultipleChildren);
 

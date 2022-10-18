@@ -70,7 +70,7 @@ module.exports = class CSGOServer extends ServerShared {
 	async incrementKillCountAttribute(killerID, victimID, itemID, eventType, amount) {
 		let eventTypeInfo = EventTypes[730]?.[eventType];
 		let maximumMultiSendAtOnce = 100; // CSGO doesn't support multi-messages but we can send multiple GC messages at once
-		let increment = eventTypeInfo?.allowIncrement ? 10_000 : 1;
+		let increment = eventTypeInfo?.allowIncrement ? 1_000 : 1;
 		let multiSendsNeeded = Math.ceil(amount / increment);
 		let chunksNeeded = Math.ceil(multiSendsNeeded / maximumMultiSendAtOnce);
 
