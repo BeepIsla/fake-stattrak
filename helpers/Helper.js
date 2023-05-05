@@ -21,18 +21,11 @@ module.exports = class Helper {
 	}
 
 	static async downloadProtobufs(dir) {
-		let deletes = ["Protobufs-master", "protobufs"];
-		await Promise.all(deletes.map(d => {
-			let p = path.join(dir, d);
-			if (fs.existsSync(p)) {
-				return this.deleteRecursive(p);
-			} else {
-				return new Promise(r => r());
-			}
-		}));
-
-		let newProDir = path.join(dir, "Protobufs-master");
-		let proDir = path.join(dir, "protobufs");
+		let protobufDir = path.join(dir, "protobufs");
+		fs.rmSync(protobufDir, {
+			force: true,
+			recursive: true
+		});
 
 		// Yes I know the ones I download here are technically not the same as the ones in the submodule
 		// but that doesn't really matter, I doubt Valve will do any major changes with the protobufs I use here anyways
@@ -40,11 +33,15 @@ module.exports = class Helper {
 		let buf = Buffer.from(await res.arrayBuffer());
 
 		let zip = await unzipper.Open.buffer(buf);
-		await zip.extract({
-			path: dir
-		});
-
-		fs.renameSync(newProDir, proDir);
+		for (const file of zip.files) {
+			if (file.type === "File") {
+				const filePath = file.path.replace("Protobufs-master", "protobufs");
+				await fs.mkdirSync(path.dirname(filePath), {
+					recursive: true
+				});
+				await fs.writeFileSync(filePath, await file.buffer());
+			}
+		}
 	}
 
 	static verifyProtobufs() {
