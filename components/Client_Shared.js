@@ -98,6 +98,18 @@ module.exports = class ClientShared extends Events {
 				this.client.gamesPlayed({
 					game_id: this.appID
 				});
+				
+				// Get latest version for CS
+				let gcVersion = undefined;
+				if (this.appID === 730) {
+					const text = await fetch("https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/master/game/csgo/steam.inf").then(r => r.text());
+					const lines = text.split("\n").map(l => l.replace(/\r/g, "").trim());
+					const idx = lines.findIndex(l => l.startsWith("ClientVersion="));
+					if (idx >= 0) {
+						const [_, version] = lines[idx].split("=");
+						gcVersion = parseInt(version);
+					}
+				}
 
 				// GC register
 				let welcomeFails = 0;
@@ -107,7 +119,9 @@ module.exports = class ClientShared extends Events {
 						this.appID,
 						4006, // Always "4006"
 						{},
-						this.protobufs.encodeProto("CMsgClientHello", {}),
+						this.protobufs.encodeProto("CMsgClientHello", {
+							version: gcVersion
+						}),
 						4004, // Always "4004"
 						5000
 					).catch(() => { });

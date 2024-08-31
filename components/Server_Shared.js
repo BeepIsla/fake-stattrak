@@ -34,7 +34,6 @@ const appIdGCHello = {
 		version: 1077,
 	},
 	"730": {
-		version: 1077,
 		client_launcher: 0,
 	}
 };
@@ -228,6 +227,17 @@ module.exports = class ServerShared extends Events {
 					game_type: "empty",
 					map: this.map
 				});
+
+				// Get latest version for CS
+				if (this.appID === 730) {
+					const text = await fetch("https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/master/game/csgo/steam.inf").then(r => r.text());
+					const lines = text.split("\n").map(l => l.replace(/\r/g, "").trim());
+					const idx = lines.findIndex(l => l.startsWith("ServerVersion="));
+					if (idx >= 0) {
+						const [_, version] = lines[idx].split("=");
+						appIdGCHello[this.appID].version = parseInt(version);
+					}
+				}
 
 				// GC register
 				let welcome = await this.coordinator.sendMessage(
